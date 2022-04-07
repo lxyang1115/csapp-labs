@@ -1,0 +1,159 @@
+                            | #/* $begin ncopy-ys */
+                            | ##################################################################
+                            | # ncopy.ys - Copy a src block of len words to dst.
+                            | # Return the number of positive words (>0) contained in src.
+                            | #
+                            | # Include your name and ID here.
+                            | # Lu Xiaoyang
+                            | # 518021910416
+                            | #
+                            | # Describe how and why you modified the baseline code.
+                            | #
+                            | ##################################################################
+                            | # Do not modify this portion
+                            | # Function prologue.
+                            | # %rdi = src, %rsi = dst, %rdx = len
+0x000:                      | ncopy:
+                            | 
+                            | ##################################################################
+                            | # You can modify this portion
+                            | # 3 -> ((1 -> (0, 2)), (5 -> (4, 6)))
+                            | 	# Loop header
+0x000: c0f2f9ffffffffffffff | 	iaddq $-7, %rdx		# len < 7?
+0x00a: 725901000000000000   | 	jl Root			# if so, goto Root
+                            | 
+0x013:                      | Loop1:
+0x013: 50870000000000000000 | 	mrmovq (%rdi), %r8	# read val from src...
+0x01d: 50970800000000000000 | 	mrmovq 8(%rdi), %r9	# read val from src... reduce bubble
+0x027: 40860000000000000000 | 	rmmovq %r8, (%rsi)	# ...and store it to dst
+0x031: 6288                 | 	andq %r8, %r8		# val <= 0?
+0x033: 714600000000000000   | 	jle Loop2			# if so, goto Loop2:
+0x03c: c0f00100000000000000 | 	iaddq $1, %rax		# count++
+                            | 
+0x046:                      | Loop2:
+0x046: 50871000000000000000 | 	mrmovq 16(%rdi), %r8	# read val from src...
+0x050: 40960800000000000000 | 	rmmovq %r9, 8(%rsi)	# ...and store it to dst
+0x05a: 6299                 | 	andq %r9, %r9		# val <= 0?
+0x05c: 716f00000000000000   | 	jle Loop3			# if so, goto Loop3:
+0x065: c0f00100000000000000 | 	iaddq $1, %rax		# count++
+                            | 
+0x06f:                      | Loop3:
+0x06f: 50971800000000000000 | 	mrmovq 24(%rdi), %r9	# read val from src...
+0x079: 40861000000000000000 | 	rmmovq %r8, 16(%rsi)	# ...and store it to dst
+0x083: 6288                 | 	andq %r8, %r8		# val <= 0?
+0x085: 719800000000000000   | 	jle Loop4			# if so, goto Loop4:
+0x08e: c0f00100000000000000 | 	iaddq $1, %rax		# count++
+                            | 
+0x098:                      | Loop4:
+0x098: 50872000000000000000 | 	mrmovq 32(%rdi), %r8	# read val from src...
+0x0a2: 40961800000000000000 | 	rmmovq %r9, 24(%rsi)	# ...and store it to dst
+0x0ac: 6299                 | 	andq %r9, %r9		# val <= 0?
+0x0ae: 71c100000000000000   | 	jle Loop5			# if so, goto Loop5:
+0x0b7: c0f00100000000000000 | 	iaddq $1, %rax		# count++
+                            | 
+0x0c1:                      | Loop5:
+0x0c1: 50972800000000000000 | 	mrmovq 40(%rdi), %r9	# read val from src...
+0x0cb: 40862000000000000000 | 	rmmovq %r8, 32(%rsi)	# ...and store it to dst
+0x0d5: 6288                 | 	andq %r8, %r8		# val <= 0?
+0x0d7: 71ea00000000000000   | 	jle Loop6			# if so, goto Loop6:
+0x0e0: c0f00100000000000000 | 	iaddq $1, %rax		# count++
+                            | 
+0x0ea:                      | Loop6:
+0x0ea: 50873000000000000000 | 	mrmovq 48(%rdi), %r8	# read val from src...
+0x0f4: 40962800000000000000 | 	rmmovq %r9, 40(%rsi)	# ...and store it to dst
+0x0fe: 6299                 | 	andq %r9, %r9		# val <= 0?
+0x100: 711301000000000000   | 	jle Loop7			# if so, goto Loop7:
+0x109: c0f00100000000000000 | 	iaddq $1, %rax		# count++
+                            | 
+0x113:                      | Loop7:
+0x113: 40863000000000000000 | 	rmmovq %r8, 48(%rsi)	# ...and store it to dst
+0x11d: 6288                 | 	andq %r8, %r8		# val <= 0?
+0x11f: 713201000000000000   | 	jle Loop			# if so, goto Loop:
+0x128: c0f00100000000000000 | 	iaddq $1, %rax		# count++
+                            | 
+0x132:                      | Loop:
+0x132: c0f73800000000000000 | 	iaddq $56, %rdi		# src++
+0x13c: c0f63800000000000000 | 	iaddq $56, %rsi		# dst++
+0x146: c0f2f9ffffffffffffff | 	iaddq $-7, %rdx		# len >= 7?
+0x150: 751300000000000000   | 	jge Loop1			# if so, goto Loop1:
+                            | 
+0x159:                      | Root:
+0x159: c0f20400000000000000 | 	iaddq $4, %rdx		# len == 3?
+0x163: 727e01000000000000   | 	jl Left
+0x16c: 76a501000000000000   | 	jg Right
+0x175: 732902000000000000   | 	je Remain3
+                            | 
+0x17e:                      | Left:
+0x17e: c0f20100000000000000 | 	iaddq $1, %rdx		# len == 2?
+0x188: 735202000000000000   | 	je Remain2
+0x191: c0f20100000000000000 | 	iaddq $1, %rdx		# len == 1?
+0x19b: 737b02000000000000   | 	je Remain1
+0x1a4: 90                   | 	ret					# Remain 0
+                            | 
+0x1a5:                      | Right:
+0x1a5: c0f2feffffffffffffff | 	iaddq $-2, %rdx		# len == 5?
+0x1af: 720002000000000000   | 	jl Remain4
+0x1b8: 73d701000000000000   | 	je Remain5
+                            | 
+0x1c1:                      | Remain6:
+0x1c1: 50872800000000000000 | 	mrmovq 40(%rdi), %r8	# read val from src...
+0x1cb: 40862800000000000000 | 	rmmovq %r8, 40(%rsi)
+0x1d5: 6288                 | 	andq %r8, %r8		# val <= 0?	Remain to add, reduce bubble
+                            | 
+0x1d7:                      | Remain5:
+0x1d7: 50872000000000000000 | 	mrmovq 32(%rdi), %r8	# read val from src...
+0x1e1: 71f401000000000000   | 	jle Remain51			# if so, goto:
+0x1ea: c0f00100000000000000 | 	iaddq $1, %rax		# count++
+                            | 
+0x1f4:                      | Remain51:
+0x1f4: 40862000000000000000 | 	rmmovq %r8, 32(%rsi)
+0x1fe: 6288                 | 	andq %r8, %r8		# val <= 0?	Remain to add, reduce bubble
+                            | 
+0x200:                      | Remain4:
+0x200: 50871800000000000000 | 	mrmovq 24(%rdi), %r8	# read val from src...
+0x20a: 711d02000000000000   | 	jle Remain41			# if so, goto:
+0x213: c0f00100000000000000 | 	iaddq $1, %rax		# count++
+                            | 
+0x21d:                      | Remain41:
+0x21d: 40861800000000000000 | 	rmmovq %r8, 24(%rsi)
+0x227: 6288                 | 	andq %r8, %r8		# val <= 0?	Remain to add, reduce bubble
+                            | 
+0x229:                      | Remain3:
+0x229: 50871000000000000000 | 	mrmovq 16(%rdi), %r8	# read val from src...
+0x233: 714602000000000000   | 	jle Remain31			# if so, goto:
+0x23c: c0f00100000000000000 | 	iaddq $1, %rax		# count++
+                            | 
+0x246:                      | Remain31:
+0x246: 40861000000000000000 | 	rmmovq %r8, 16(%rsi)
+0x250: 6288                 | 	andq %r8, %r8		# val <= 0?	Remain to add, reduce bubble
+                            | 
+0x252:                      | Remain2:
+0x252: 50870800000000000000 | 	mrmovq 8(%rdi), %r8		# read val from src...
+0x25c: 716f02000000000000   | 	jle Remain21			# if so, goto:
+0x265: c0f00100000000000000 | 	iaddq $1, %rax		# count++
+                            | 
+0x26f:                      | Remain21:
+0x26f: 40860800000000000000 | 	rmmovq %r8, 8(%rsi)
+0x279: 6288                 | 	andq %r8, %r8		# val <= 0?	Remain to add, reduce bubble
+                            | 
+0x27b:                      | Remain1:
+0x27b: 50870000000000000000 | 	mrmovq (%rdi), %r8		# read val from src...
+0x285: 719802000000000000   | 	jle Remain11			# if so, goto:
+0x28e: c0f00100000000000000 | 	iaddq $1, %rax		# count++
+                            | 
+0x298:                      | Remain11:
+0x298: 40860000000000000000 | 	rmmovq %r8, (%rsi)
+0x2a2: 6288                 | 	andq %r8, %r8		# val <= 0?	Remain to add, reduce bubble
+0x2a4: 71b702000000000000   | 	jle Done			# if so, goto Done:
+0x2ad: c0f00100000000000000 | 	iaddq $0x1, %rax		# count++
+                            | 
+                            | 
+                            | ##################################################################
+                            | # Do not modify the following section of code
+                            | # Function epilogue.
+0x2b7:                      | Done:
+0x2b7: 90                   | 	ret
+                            | ##################################################################
+                            | # Keep the following label at the end of your function
+0x2b8:                      | End:
+                            | #/* $end ncopy-ys */
